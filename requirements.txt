@@ -1,3 +1,5 @@
 python-telegram-bot==21.3
 python-dotenv==1.0.1
 Pillow==10.4.0
+pdf2image
+pillow
