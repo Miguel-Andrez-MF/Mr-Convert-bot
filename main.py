@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-from src.handlers.start_handler import start
-from src.handlers.menu_handler import menu_handler, with_continue_menu
-from src.handlers.convert_images import handle_image
-from src.handlers.convert_pdf import handle_pdf
+from handlers.menus.start_handler import start
+from handlers.menus.menu_handler import menu_handler, with_continue_menu
+from handlers.image_conversion.convert_images import handle_image
+from handlers.pdf_conversion.convert_pdf import handle_pdf
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -14,13 +14,10 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # Comandos
     app.add_handler(CommandHandler("start", start))
 
-    # Menú principal
     app.add_handler(CallbackQueryHandler(menu_handler))
 
-    # Conversores (envueltos con menú final)
     app.add_handler(MessageHandler(
         (filters.PHOTO | filters.Document.IMAGE),
         with_continue_menu(handle_image)
