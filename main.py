@@ -8,6 +8,8 @@ from src.handlers.convert_pdf import handle_pdf
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
+TEMP_DIR = os.getenv("TEMP_DIR", "./temp")
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
