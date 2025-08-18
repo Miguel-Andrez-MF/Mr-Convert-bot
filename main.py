@@ -1,10 +1,11 @@
 import os
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-from handlers.menus.start_handler import start
-from handlers.menus.menu_handler import menu_handler, with_continue_menu
-from handlers.image_conversion.convert_images import handle_image
-from handlers.pdf_conversion.convert_pdf import handle_pdf
+
+# Importar handlers
+from src.handlers.menus.start_handler import start
+from src.handlers.menus.menu_router import *
+from src.handlers.menus.file_handler import *
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -19,15 +20,12 @@ def main():
     app.add_handler(CallbackQueryHandler(menu_handler))
 
     app.add_handler(MessageHandler(
-        (filters.PHOTO | filters.Document.IMAGE),
-        with_continue_menu(handle_image)
-    ))
-    app.add_handler(MessageHandler(
-        filters.Document.PDF,
-        with_continue_menu(handle_pdf)
+        (filters.PHOTO | filters.Document.ALL) & ~filters.COMMAND,
+        with_continue_menu(handle_file)
     ))
 
-    print("Bot maquinando🤖...")
+    print("🤖 Bot Mr.Convert iniciado...")
+
     app.run_polling()
 
 if __name__ == "__main__":

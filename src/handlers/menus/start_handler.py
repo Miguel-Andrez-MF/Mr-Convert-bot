@@ -1,17 +1,14 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import ContextTypes
+from .keyboards import MAIN_MENU_KEYBOARD, WELCOME_MESSAGE
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("🖼 Convertir Imagen (PNG ↔ JPG)", callback_data="convert_image")],
-        [InlineKeyboardButton("📄 PDF a Imágenes", callback_data="convert_pdf")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await update.message.reply_text(
-        "👋 ¡Hola! Soy Mr.Convert.\n\nElige qué quieres hacer:",
-        reply_markup=reply_markup
-    )
-
-
+    """Comando /start - Menú principal de bienvenida"""
     
+    context.user_data.clear()
+    
+    await update.message.reply_text(
+        WELCOME_MESSAGE,
+        reply_markup=MAIN_MENU_KEYBOARD,
+        parse_mode="Markdown"
+    )
