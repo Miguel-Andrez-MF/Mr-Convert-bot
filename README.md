@@ -10,7 +10,7 @@
 ![Docker](https://img.shields.io/badge/DOCKER-Ready-2F3349?style=for-the-badge&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/LICENSE-MIT-2F3349?style=for-the-badge)
 
-🔧 [Características](#características-principales) • ⚙️ [Tecnologías](#tecnologías) • 📦 [Instalación](#instalación-y-configuración) • 🎯 [Uso](#cómo-usar-el-bot) • 🏗️ [Arquitectura](#estructura-del-proyecto)
+🔧 [Características](#-características-principales) • ⚙️ [Tecnologías](#-tecnologías) • 📦 [Instalación](#-instalación-y-configuración) • 🎯 [Uso](#-cómo-usar-el-bot) • 🏗️ [Arquitectura](#-estructura-del-proyecto)
 
 ---
 
@@ -44,6 +44,17 @@
 </td>
 </tr>
 </table>
+
+---
+
+## ⚙️ Tecnologías
+
+- **Python 3.11+** - Lenguaje principal
+- **python-telegram-bot** - SDK oficial de Telegram
+- **PIL/Pillow** - Procesamiento de imágenes
+- **pdf2image** - Conversión de PDF
+- **Docker** - Containerización
+- **Railway** - Despliegue en la nube
 
 ---
 
@@ -182,8 +193,6 @@ El bot está diseñado para ser fácilmente personalizable:
 
 ---
 
-
-
 ## 📈 Roadmap
 
 ### 🎯 Próximas Características
@@ -191,18 +200,16 @@ El bot está diseñado para ser fácilmente personalizable:
 - [ ] 📊 **Conversión de Excel/CSV**
 - [ ] 🎵 **Procesamiento de audio**
 - [ ] 🎬 **Conversión de video básica**
-- [ ] 🌐 **Edición den imagen básica**
+- [ ] 🌐 **Edición de imagen básica**
 - [ ] 📱 **Funcionalidades extra**
 
 ---
-
 
 <div align="center">
 
 ### 💜 ¿Te gusta Mr.Convert?
 
 [![GitHub stars](https://img.shields.io/github/stars/tu-usuario/telegram-bot?style=social)](../../stargazers)
-
 
 **¡Dale una estrella ⭐ al repositorio!**
 
@@ -211,4 +218,3 @@ El bot está diseñado para ser fácilmente personalizable:
 *Made with ❤️ and ☕*
 
 </div>
-
