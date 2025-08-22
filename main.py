@@ -24,7 +24,7 @@ def main():
         with_continue_menu(handle_file)
     ))
 
-    print("🤖 Bot Mr.Convert iniciado...")
+    print("🤖 Bot Mr.Convert maquinando...")
 
     app.run_polling()
 

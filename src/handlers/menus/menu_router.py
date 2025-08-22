@@ -4,7 +4,8 @@ from .menu_views import *
 from .keyboards import *
 
 from ..image_conversion.convert_images import handle_image
-from ..pdf_conversion.convert_pdf import handle_pdf
+from ..pdf_conversion.pdf_to_image import handle_pdf
+from ..pdf_conversion.image_to_pdf import *
 # =============================================================================
 # ROUTER PRINCIPAL - MANEJA TODOS LOS CALLBACKS
 # =============================================================================
@@ -63,7 +64,7 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif callback_data == "images_to_pdf":
         context.user_data["mode"] = "images_to_pdf"
         # context.user_data["handler"] = handle_images_to_pdf  # Nueva función
-        context.user_data["handler"] = handle_pdf  # Temporal hasta que crees la nueva
+        context.user_data["handler"] = handle_images_to_pdf  # Temporal hasta que crees la nueva
         await query.edit_message_text(IMAGES_TO_PDF_MESSAGE, parse_mode="Markdown")
         
     elif callback_data == "compress_pdf":

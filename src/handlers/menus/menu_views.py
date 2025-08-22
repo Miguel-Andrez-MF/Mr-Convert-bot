@@ -4,7 +4,7 @@ from .keyboards import *
 
 # Importar tus funciones existentes directamente
 from ..image_conversion.convert_images import handle_image
-from ..pdf_conversion.convert_pdf import handle_pdf
+from ..pdf_conversion.pdf_to_image import handle_pdf
 
 # =============================================================================
 # FUNCIONES PARA MOSTRAR MENÚS
