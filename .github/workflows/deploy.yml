@@ -9,7 +9,6 @@ permissions:
   contents: read
   packages: write
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,14 +27,12 @@ jobs:
       - name: Push Docker image
         run: docker push ghcr.io/${{ env.REPO_LC }}/mr-convert:latest
 
-
       - name: Save image name for deploy
         id: image_name
         run: echo "image=ghcr.io/${{ env.REPO_LC }}/mr-convert:latest" >> $GITHUB_OUTPUT
 
     outputs:
       image: ${{ steps.image_name.outputs.image }}
-
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,12 +45,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}
+            echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker stop mr-convert || true
             docker rm mr-convert || true
             docker pull ${{ needs.build.outputs.image }}
             docker run -d --name mr-convert \
               -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
               ${{ needs.build.outputs.image }}
-
-
