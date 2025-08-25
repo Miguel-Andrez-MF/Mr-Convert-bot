@@ -11,14 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set repository lowercase
+        run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/mr-convert:latest .
+        run: docker build -t ghcr.io/$REPO_LC/mr-convert:latest .
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}/mr-convert:latest
+        run: docker push ghcr.io/$REPO_LC/mr-convert:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -31,10 +34,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            REPO_LC=${GITHUB_REPOSITORY,,}
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker stop mr-convert || true
             docker rm mr-convert || true
-            docker pull ghcr.io/${{ github.repository }}/mr-convert:latest
+            docker pull ghcr.io/$REPO_LC/mr-convert:latest
             docker run -d --name mr-convert \
               -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
-              ghcr.io/${{ github.repository }}/mr-convert:latest
+              ghcr.io/$REPO_LC/mr-convert:latest
