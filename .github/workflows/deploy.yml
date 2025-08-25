@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,22 +17,24 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Set repository lowercase
         run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ env.REPO_LC }}/mr-convert:latest .
+        run: docker build -t ghcr.io/${{ github.repository }}/mr-convert:latest .
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ env.REPO_LC }}/mr-convert:latest
+        run: docker push ghcr.io/${{ github.repository }}/mr-convert:latest
 
       - name: Save image name for deploy
-        run: echo "IMAGE=ghcr.io/${{ env.REPO_LC }}/mr-convert:latest" >> $GITHUB_ENV
+        id: image_name
+        run: echo "image=ghcr.io/${{ env.REPO_LC }}/mr-convert:latest" >> $GITHUB_OUTPUT
 
     outputs:
-      image: ${{ env.IMAGE }}
+      image: ${{ steps.image_name.outputs.image }}
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,10 +47,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker stop mr-convert || true
             docker rm mr-convert || true
             docker pull ${{ needs.build.outputs.image }}
             docker run -d --name mr-convert \
               -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
               ${{ needs.build.outputs.image }}
+
