@@ -23,10 +23,11 @@ jobs:
         run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/mr-convert:latest .
+        run: docker build -t ghcr.io/${{ env.REPO_LC }}/mr-convert:latest .
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}/mr-convert:latest
+        run: docker push ghcr.io/${{ env.REPO_LC }}/mr-convert:latest
+
 
       - name: Save image name for deploy
         id: image_name
@@ -47,7 +48,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}
             docker stop mr-convert || true
             docker rm mr-convert || true
             docker pull ${{ needs.build.outputs.image }}
