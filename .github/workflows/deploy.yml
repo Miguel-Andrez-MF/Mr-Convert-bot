@@ -50,5 +50,5 @@ jobs:
             docker rm mr-convert || true
             docker pull ${{ needs.build.outputs.image }}
             docker run -d --name mr-convert \
-              -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
+              -e BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
               ${{ needs.build.outputs.image }}
