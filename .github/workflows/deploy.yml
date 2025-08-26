@@ -38,17 +38,76 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to EC2 via SSH
+      - name: Deploy to EC2 via SSH with Full Cleanup
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "🚀 Iniciando deploy con limpieza completa..."
+            
+            # 1. Login a GitHub Container Registry
+            echo "🔐 Autenticando en GHCR..."
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker stop mr-convert || true
-            docker rm mr-convert || true
+            
+            # 2. Detener y eliminar contenedores existentes
+            echo "🛑 Deteniendo contenedores existentes..."
+            docker stop $(docker ps -aq) 2>/dev/null || echo "No hay contenedores corriendo"
+            
+            echo "🗑️ Eliminando contenedores existentes..."
+            docker rm $(docker ps -aq) 2>/dev/null || echo "No hay contenedores para eliminar"
+            
+            # 3. Eliminar TODAS las imágenes Docker
+            echo "🧹 Eliminando todas las imágenes Docker..."
+            docker rmi $(docker images -q) --force 2>/dev/null || echo "No hay imágenes para eliminar"
+            
+            # 4. Limpiar sistema Docker completo
+            echo "🔄 Limpieza profunda del sistema Docker..."
+            docker system prune -af --volumes 2>/dev/null || echo "Sistema ya limpio"
+            
+            # 5. Verificar espacio en disco después de limpieza
+            echo "💾 Verificando espacio disponible:"
+            df -h /
+            
+            # 6. Descargar la nueva imagen
+            echo "⬇️ Descargando nueva imagen..."
             docker pull ${{ needs.build.outputs.image }}
+            
+            # 7. Verificar que la imagen se descargó correctamente
+            echo "✅ Verificando imagen descargada:"
+            docker images | grep mr-convert
+            
+            # 8. Crear directorio temporal si no existe
+            echo "📁 Preparando directorios..."
+            mkdir -p ~/temp
+            
+            # 9. Ejecutar nuevo contenedor
+            echo "🚀 Iniciando nuevo contenedor..."
             docker run -d --name mr-convert \
+              --restart unless-stopped \
+              -v ~/temp:/app/temp \
               -e BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
+              -e TEMP_DIR=/app/temp \
               ${{ needs.build.outputs.image }}
+            
+            # 10. Verificar que el contenedor esté corriendo
+            echo "🔍 Verificando estado del contenedor:"
+            docker ps
+            
+            # 11. Mostrar logs iniciales
+            echo "📜 Logs iniciales del bot:"
+            docker logs mr-convert --tail 20
+            
+            # 12. Mostrar estado final del sistema
+            echo "📊 Estado final del sistema:"
+            echo "Contenedores activos:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+            echo ""
+            echo "Uso de memoria:"
+            free -h
+            echo ""
+            echo "Espacio en disco:"
+            df -h /
+            
+            echo "✅ Deploy completado exitosamente!"
