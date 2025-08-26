@@ -236,17 +236,17 @@ async def handle_pdf_optimized(update: Update, context: ContextTypes.DEFAULT_TYP
         # Configuración adaptativa basada en memoria disponible
         memory_check = psutil.virtual_memory()
         if memory_check.available < 300 * 1024 * 1024:  # Menos de 300MB
-            dpi = 200
+            dpi = 300
             max_dimension = 1024
             quality = 80
         elif memory_check.available < 500 * 1024 * 1024:  # Menos de 500MB
-            dpi = 300
-            max_dimension = 1536
-            quality = 85
-        else:
             dpi = 400
-            max_dimension = 2048
+            max_dimension = 1536
             quality = 90
+        else:
+            dpi = 450
+            max_dimension = 2048
+            quality = 85
         
         print(f"🎛️ [CONFIG] DPI: {dpi}, Max dimension: {max_dimension}, Quality: {quality}")
         
